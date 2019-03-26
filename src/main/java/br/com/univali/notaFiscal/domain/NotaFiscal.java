@@ -1,7 +1,22 @@
-package br.com.univali.notaFiscal.dto;
+package br.com.univali.notaFiscal.domain;
 
-public class NotaFiscalDTO {
+import java.io.Serializable;
+import java.util.UUID;
 
+import org.springframework.data.cassandra.core.mapping.CassandraType;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
+
+import com.datastax.driver.core.DataType;
+
+@Table("notafiscal")
+public class NotaFiscal implements Serializable {
+
+	private static final long serialVersionUID = 622582932174223257L;
+	
+	@PrimaryKey
+	@CassandraType(type = DataType.Name.UUID)
+	private UUID id;
 	private String name;
 	private String address;
 	private String number;
@@ -14,6 +29,14 @@ public class NotaFiscalDTO {
 	private Double discount_percent;
 	private Double subtotal;
 	private Double value;
+
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;
