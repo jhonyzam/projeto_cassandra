@@ -33,10 +33,19 @@ public class NotaFiscalService {
 
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 
-		String sql = String.format("SELECT \r\n" + "	c.name, \r\n" + "	c.address,\r\n" + "	i.number,\r\n"
-				+ "	s.service_description,\r\n" + "	ii.quantity, ii.unit_value,\r\n" + "	r.name As recurso,\r\n"
-				+ "	rq.qualificatin_name as funcao,\r\n" + "	ii.tax_percent, \r\n" + "	ii.discount_percent, \r\n"
-				+ "	ii.subtotal,\r\n" + "	i.value\r\n" + "FROM\r\n" + "customer c\r\n"
+		String sql = String.format("SELECT \r\n" 
+				+ "	c.name, \r\n" + "	c.address,\r\n" 
+				+ "	i.number,\r\n"
+				+ "	s.service_description,\r\n" 
+				+ "	ii.quantity, ii.unit_value,\r\n" 
+				+ "	r.name As recurso,\r\n"
+				+ "	rq.qualificatin_name as funcao,\r\n" 
+				+ "	ii.tax_percent, \r\n" 
+				+ "	ii.discount_percent, \r\n"
+				+ "	ii.subtotal,\r\n" 
+				+ "	i.value\r\n" 
+				+ "FROM\r\n"
+				+ "customer c\r\n"
 				+ "inner join invoice i on c.id_customer = i.customer_id\r\n"
 				+ "inner join invoice_item ii on ii.invoice_id = i.number\r\n"
 				+ "inner join service s on s.service_id = ii.service_id\r\n"
@@ -69,8 +78,10 @@ public class NotaFiscalService {
 		return notasFiscais;
 	}
 
-	public NotaFiscal getById(UUID id) {
-		return notaFiscalRepository.findById(id).orElse(null);
+	public NotaFiscalDTO getById(UUID id) {
+		NotaFiscalDTO notaFiscalDTO = this
+				.converteNotaFiscalNotafiscalDTO(notaFiscalRepository.findById(id).orElse(null));
+		return notaFiscalDTO;
 	}
 
 	public NotaFiscal save(NotaFiscalDTO notaFiscalDTO) {
@@ -100,5 +111,24 @@ public class NotaFiscalService {
 		notaFiscal.setValue(notaFiscalDTO.getValue());
 
 		return notaFiscal;
+	}
+
+	public NotaFiscalDTO converteNotaFiscalNotafiscalDTO(NotaFiscal notaFiscal) {
+		NotaFiscalDTO notaFiscalDTO = new NotaFiscalDTO();
+
+		notaFiscalDTO.setName(notaFiscal.getName());
+		notaFiscalDTO.setAddress(notaFiscal.getAddress());
+		notaFiscalDTO.setNumber(notaFiscal.getNumber());
+		notaFiscalDTO.setService_description(notaFiscal.getService_description());
+		notaFiscalDTO.setQuantity(notaFiscal.getQuantity());
+		notaFiscalDTO.setUnit_value(notaFiscal.getUnit_value());
+		notaFiscalDTO.setRecurso(notaFiscal.getRecurso());
+		notaFiscalDTO.setFuncao(notaFiscal.getFuncao());
+		notaFiscalDTO.setTax_percent(notaFiscal.getTax_percent());
+		notaFiscalDTO.setDiscount_percent(notaFiscal.getDiscount_percent());
+		notaFiscalDTO.setSubtotal(notaFiscal.getSubtotal());
+		notaFiscalDTO.setValue(notaFiscal.getValue());
+
+		return notaFiscalDTO;
 	}
 }

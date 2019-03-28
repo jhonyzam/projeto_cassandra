@@ -22,7 +22,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
 
     @Override
     protected List<CreateKeyspaceSpecification> getKeyspaceCreations() {
-        CreateKeyspaceSpecification specification = CreateKeyspaceSpecification.createKeyspace(KEYSPACE);
+        CreateKeyspaceSpecification specification = CreateKeyspaceSpecification.createKeyspace(KEYSPACE).ifNotExists();
 
         return Arrays.asList(specification);
     }
