@@ -6,19 +6,17 @@ import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
-import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.cql.keyspace.CreateKeyspaceSpecification;
-import org.springframework.data.cassandra.core.cql.keyspace.DropKeyspaceSpecification;
 
 @Configuration
 public class CassandraConfig extends AbstractCassandraConfiguration {
 
     public static final String KEYSPACE = "nota_fiscal";
 
-    @Override
-    public SchemaAction getSchemaAction() {
-        return SchemaAction.CREATE_IF_NOT_EXISTS;
-    }
+//    @Override
+//    public SchemaAction getSchemaAction() {
+//        return SchemaAction.CREATE_IF_NOT_EXISTS;
+//    }
 
     @Override
     protected List<CreateKeyspaceSpecification> getKeyspaceCreations() {
@@ -27,10 +25,10 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
         return Arrays.asList(specification);
     }
 
-    @Override
-    protected List<DropKeyspaceSpecification> getKeyspaceDrops() {
-        return Arrays.asList(DropKeyspaceSpecification.dropKeyspace(KEYSPACE));
-    }
+//    @Override
+//    protected List<DropKeyspaceSpecification> getKeyspaceDrops() {
+//        return Arrays.asList(DropKeyspaceSpecification.dropKeyspace(KEYSPACE));
+//    }
 
     @Override
     protected String getKeyspaceName() {

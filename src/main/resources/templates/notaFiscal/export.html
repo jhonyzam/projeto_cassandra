@@ -1,20 +1,100 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+<link rel="stylesheet"
+	href="http://localhost:8080/css/bootstrap.min.css" />
+<link rel="stylesheet" href="http://localhost:8080/css/main.css" />
 </head>
 <body>
-	<p th:text="'Name, ' + ${notafiscal.name}" />
-	<p th:text="'Addres, ' + ${notafiscal.address}" />
-	<p th:text="'Number, ' + ${notafiscal.number}" />
-	<p th:text="'Service_description, ' + ${notafiscal.service_description}" />
-	<p th:text="'Quantity, ' + ${notafiscal.quantity}" />
-	<p th:text="'Unit_value, ' + ${notafiscal.unit_value}" />
-	<p th:text="'Recurso, ' + ${notafiscal.recurso}" />
-	<p th:text="'Funcao, ' + ${notafiscal.funcao}" />
-	<p th:text="'Tax_percent, ' + ${notafiscal.tax_percent}" />
-	<p th:text="'Discount_percent, ' + ${notafiscal.discount_percent}" />
-	<p th:text="'Subtotal, ' + ${notafiscal.subtotal}" />
-	<p th:text="'Value, ' + ${notafiscal.value}" />
+	<div class="container">
+		<div class="linha">
+			<div class="sub-linha oitentaPercent left" style="font-size: 10px;"
+				th:text="'RECEBEMOS DE ' + ${notafiscal.name} +' OS PRODUTOS E/OU SERVI&Ccedil;OS CONSTANTES DA NOTA FISCAL ELETR&Ocirc;NICA INDICADA ABAIXO'"></div>
+			<div class="sub-linha left" style="width: 148px">
+				<label class="sublinha-tit" th:text="'DATA DE RECEBIMENTO'">default</label>
+			</div>
+			<div class="sub-linha left" style="width: 398px;">
+				<label class="sublinha-tit" th:text="'ASSINATURA DO RECEBEDOR'">default</label>
+			</div>
+			<div style="height: 60px; position: absolute; top: 0; right: 0;"
+				class="sub-linha vintePercent right"></div>
+		</div>
 
+		<div class="linha-pontilhada"></div>
+
+		<div class="linha">
+			<div class="sub-linha vintePercent left" style="height: 100px;">
+				<img class="logo" src="http://localhost:8080/images/logo.jpg" />
+			</div>
+			<div class="sub-linha quarentaPercent left" style="height: 100px"></div>
+			<div class="sub-linha left" style="width: 273px; height: 100px"></div>
+		</div>
+
+
+		<label class="label-linha" th:text="'DESTIN&Aacute;TARIO / REMETENTE'">default</label>
+		<div class="linha">
+			<div class="sub-linha sessentaPercent left">
+				<label class="sublinha-tit" th:text="'NOME / RAZ&Atilde;O SOCIAL'">default</label>
+				<label class="sublinha-val" th:text="${notafiscal.name}">default</label>
+			</div>
+			<div class="sub-linha vintePercent left">
+				<label class="sublinha-tit" th:text="'CPF / CNPJ'">default</label> <label
+					class="sublinha-val" th:text="00000000000">default</label>
+			</div>
+			<div class="sub-linha vintePercent left">
+				<label class="sublinha-tit" th:text="'DATA DE EMISS&Atilde;O'">default</label>
+				<label class="sublinha-val" th:text="'00/00/0000'">default</label>
+			</div>
+			<div class="sub-linha cemPercent left">
+				<label class="sublinha-tit" th:text="'ENDERE&Ccedil;O'">default</label>
+				<label class="sublinha-val" th:text="${notafiscal.address}">default</label>
+			</div>
+		</div>
+
+		<label class="label-linha"
+			th:text="'DADOS DOS PRODUTOS / SERVI&Ccedil;OS'">default</label>
+		<div class="linha">
+			<div class="sub-linha cemPercent left"
+				style="min-height: 20px; height: 20px;">
+				<div class="titulo-table" style="width: 52px">C&Oacute;DIGO</div>
+				<div class="titulo-table trintaPercent">DESCRI&Ccedil;&Atilde;O</div>
+				<div class="titulo-table dezPercent">QUANT.</div>
+				<div class="titulo-table dezPercent">VALOR UNIT</div>
+				<div class="titulo-table" style="width: 30px">TAXA</div>
+				<div class="titulo-table dezPercent">DESCONTO</div>
+				<div class="titulo-table dezPercent">SUB-TOTAL</div>
+				<div class="titulo-table dezPercent" style="border-right: 0;">TOTAL</div>
+			</div>
+			<div class="sub-linha cemPercent left">
+				<div class="value-table" style="width: 52px"
+					th:text="${notafiscal.number}">default</div>
+				<div class="value-table trintaPercent"
+					th:text="${notafiscal.service_description}">default</div>
+				<div class="value-table dezPercent" th:text="${notafiscal.quantity}">default</div>
+				<div class="value-table dezPercent"
+					th:text="${notafiscal.unit_value}">default</div>
+				<div class="value-table" style="width: 30px"
+					th:text="${notafiscal.tax_percent}">default</div>
+				<div class="value-table dezPercent"
+					th:text="${notafiscal.discount_percent}">default</div>
+				<div class="value-table dezPercent"
+					th:text="${#numbers.formatDecimal(notafiscal.subtotal, 0, 'POINT', 2, 'COMMA')}">default</div>
+				<div class="value-table dezPercent" style="border-right: 0;"
+					th:text="${#numbers.formatDecimal(notafiscal.value, 0, 'POINT', 2, 'COMMA')}">default</div>
+			</div>
+		</div>
+
+		<label class="label-linha" th:text="'DADOS ADICIONAIS'">default</label>
+		<div class="linha">
+			<div class="sub-linha sessentaPercent left">
+				<label class="sublinha-tit" th:text="'RECURSO'">default</label> <label
+					class="sublinha-val" th:text="${notafiscal.recurso}">default</label>
+			</div>
+			<div class="sub-linha left" style="width: 267px">
+				<label class="sublinha-tit" th:text="'FUN&Ccedil;&Atilde;O'">default</label>
+				<label class="sublinha-val" th:text="${notafiscal.funcao}">default</label>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
