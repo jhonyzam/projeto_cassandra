@@ -1,9 +1,10 @@
-package br.com.univali.notaFiscal.domain;
+package br.com.univali.notaFiscal.model;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 import org.springframework.data.cassandra.core.mapping.CassandraType;
+import org.springframework.data.cassandra.core.mapping.Indexed;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -13,13 +14,15 @@ import com.datastax.driver.core.DataType;
 public class NotaFiscal implements Serializable {
 
 	private static final long serialVersionUID = 622582932174223257L;
-	
+
 	@PrimaryKey
 	@CassandraType(type = DataType.Name.UUID)
 	private UUID id;
 	private String name;
 	private String address;
-	private String number;
+
+	@Indexed
+	private Integer number;
 	private String service_description;
 	private Long quantity;
 	private Long unit_value;
@@ -54,11 +57,11 @@ public class NotaFiscal implements Serializable {
 		this.address = address;
 	}
 
-	public String getNumber() {
+	public Integer getNumber() {
 		return number;
 	}
 
-	public void setNumber(String number) {
+	public void setNumber(Integer number) {
 		this.number = number;
 	}
 

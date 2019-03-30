@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,8 +15,10 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import br.com.univali.notaFiscal.domain.NotaFiscal;
 import br.com.univali.notaFiscal.dto.NotaFiscalDTO;
+import br.com.univali.notaFiscal.dto.NotaFiscalItemDTO;
+import br.com.univali.notaFiscal.dto.NotaFiscalList;
+import br.com.univali.notaFiscal.model.NotaFiscal;
 import br.com.univali.notaFiscal.repositories.NotaFiscalRepository;
 
 @Service
@@ -33,102 +36,128 @@ public class NotaFiscalService {
 
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
 
-		String sql = String.format("SELECT \r\n" 
-				+ "	c.name, \r\n" + "	c.address,\r\n" 
-				+ "	i.number,\r\n"
-				+ "	s.service_description,\r\n" 
-				+ "	ii.quantity, ii.unit_value,\r\n" 
-				+ "	r.name As recurso,\r\n"
-				+ "	rq.qualificatin_name as funcao,\r\n" 
-				+ "	ii.tax_percent, \r\n" 
-				+ "	ii.discount_percent, \r\n"
-				+ "	ii.subtotal,\r\n" 
-				+ "	i.value\r\n" 
-				+ "FROM\r\n"
-				+ "customer c\r\n"
-				+ "inner join invoice i on c.id_customer = i.customer_id\r\n"
-				+ "inner join invoice_item ii on ii.invoice_id = i.number\r\n"
-				+ "inner join service s on s.service_id = ii.service_id\r\n"
-				+ "inner join resource r on r.id_resource = ii.resource_id\r\n"
-				+ "inner join resource_qualification_assignement rqa on rqa.resource_id = r.id_resource\r\n"
-				+ "inner join resource_qualification rq on rq.id_resource_qualification = rqa.qualification_id\r\n"
-				+ "order by\r\n" + "	c.name, i.number ");
+		String sql = String.format("SELECT " 
+				+ " c.name, " 
+				+ "	c.address, " 
+				+ "	i.number, "
+				+ "	s.service_description, " 
+				+ "	ii.quantity, ii.unit_value, " 
+				+ "	r.name As recurso, "
+				+ "	rq.qualificatin_name as funcao, " 
+				+ "	ii.tax_percent, " 
+				+ "	ii.discount_percent, "
+				+ "	ii.subtotal,"
+				+ "	i.value " 
+				+ "FROM " + "customer c "
+				+ "inner join invoice i on c.id_customer = i.customer_id "
+				+ "inner join invoice_item ii on ii.invoice_id = i.number "
+				+ "inner join service s on s.service_id = ii.service_id "
+				+ "inner join resource r on r.id_resource = ii.resource_id "
+				+ "inner join resource_qualification_assignement rqa on rqa.resource_id = r.id_resource "
+				+ "inner join resource_qualification rq on rq.id_resource_qualification = rqa.qualification_id "
+				+ "order by " 
+				+ "	c.name, i.number ");
 
 		List<Map<String, Object>> listMap = jdbcTemplate.queryForList(sql);
 
 		Gson gson = new Gson();
 		String json = gson.toJson(listMap);
 
-		Type listType = new TypeToken<ArrayList<NotaFiscalDTO>>() {
+		Type listType = new TypeToken<ArrayList<NotaFiscal>>() {
 		}.getType();
-		List<NotaFiscalDTO> listNotaFiscalDTO = gson.fromJson(json, listType);
+		List<NotaFiscal> listNotaFiscal = gson.fromJson(json, listType);
 
 		// Limpar tabela
-		notaFiscalRepository.deleteAll();
-		for (NotaFiscalDTO notaFiscalDTO : listNotaFiscalDTO) {
-			this.save(notaFiscalDTO);
+		try {
+			notaFiscalRepository.deleteAll();
+		} catch (Exception e) {
+			System.out.println("Não tem dados");
+		}
+
+		for (NotaFiscal notaFiscal : listNotaFiscal) {
+			this.save(notaFiscal);
 		}
 
 		return "Tabela notafiscal populada com sucesso";
 	}
 
-	public List<NotaFiscal> listAll() {
-		List<NotaFiscal> notasFiscais = new ArrayList<>();
-		notaFiscalRepository.findAll().forEach(notasFiscais::add); // fun with Java 8
-		return notasFiscais;
+	public List<NotaFiscalList> listAll() {
+		List<NotaFiscal> notasFiscais = notaFiscalRepository.findAll();
+		List<NotaFiscalList> listNotasFiscais = new ArrayList<>();
+		for (NotaFiscal notaFiscal : notasFiscais) {
+			if (ignoraDuplicado(listNotasFiscais, notaFiscal.getNumber())) {
+
+				NotaFiscalList nf = new NotaFiscalList();
+				nf.setNumber(notaFiscal.getNumber());
+				nf.setName(notaFiscal.getName());
+
+				listNotasFiscais.add(nf);
+			}
+		}
+
+		List<NotaFiscalList> listNotasFiscaisNoDuplicate = listNotasFiscais.stream().distinct()
+				.collect(Collectors.toList());
+		return listNotasFiscaisNoDuplicate;
 	}
 
 	public NotaFiscalDTO getById(UUID id) {
-		NotaFiscalDTO notaFiscalDTO = this
-				.converteNotaFiscalNotafiscalDTO(notaFiscalRepository.findById(id).orElse(null));
-		return notaFiscalDTO;
+		List<NotaFiscal> listNotaFiscal = new ArrayList<>();
+		NotaFiscal notaFiscal = notaFiscalRepository.findById(id).orElse(null);
+		listNotaFiscal.add(notaFiscal);
+
+		return this.converteNotaFiscalNotafiscalDTO(listNotaFiscal);
 	}
 
-	public NotaFiscal save(NotaFiscalDTO notaFiscalDTO) {
-		NotaFiscal notafiscal = this.converteNotaFiscalDTONotafiscal(notaFiscalDTO);
-		return notaFiscalRepository.save(notafiscal);
+	public NotaFiscalDTO getByNumber(Integer number) {
+		List<NotaFiscal> listNotaFiscal = notaFiscalRepository.getByNumber(number);
+		return this.converteNotaFiscalNotafiscalDTO(listNotaFiscal);
+	}
+
+	public NotaFiscal save(NotaFiscal notaFiscal) {
+		notaFiscal.setId(UUID.randomUUID());
+		return notaFiscalRepository.save(notaFiscal);
 	}
 
 	public void delete(UUID id) {
 		notaFiscalRepository.deleteById(id);
 	}
 
-	public NotaFiscal converteNotaFiscalDTONotafiscal(NotaFiscalDTO notaFiscalDTO) {
-		NotaFiscal notaFiscal = new NotaFiscal();
-
-		notaFiscal.setId(UUID.randomUUID());
-		notaFiscal.setName(notaFiscalDTO.getName());
-		notaFiscal.setAddress(notaFiscalDTO.getAddress());
-		notaFiscal.setNumber(notaFiscalDTO.getNumber());
-		notaFiscal.setService_description(notaFiscalDTO.getService_description());
-		notaFiscal.setQuantity(notaFiscalDTO.getQuantity());
-		notaFiscal.setUnit_value(notaFiscalDTO.getUnit_value());
-		notaFiscal.setRecurso(notaFiscalDTO.getRecurso());
-		notaFiscal.setFuncao(notaFiscalDTO.getFuncao());
-		notaFiscal.setTax_percent(notaFiscalDTO.getTax_percent());
-		notaFiscal.setDiscount_percent(notaFiscalDTO.getDiscount_percent());
-		notaFiscal.setSubtotal(notaFiscalDTO.getSubtotal());
-		notaFiscal.setValue(notaFiscalDTO.getValue());
-
-		return notaFiscal;
-	}
-
-	public NotaFiscalDTO converteNotaFiscalNotafiscalDTO(NotaFiscal notaFiscal) {
+	public NotaFiscalDTO converteNotaFiscalNotafiscalDTO(List<NotaFiscal> listaNotafiscal) {
 		NotaFiscalDTO notaFiscalDTO = new NotaFiscalDTO();
 
-		notaFiscalDTO.setName(notaFiscal.getName());
-		notaFiscalDTO.setAddress(notaFiscal.getAddress());
-		notaFiscalDTO.setNumber(notaFiscal.getNumber());
-		notaFiscalDTO.setService_description(notaFiscal.getService_description());
-		notaFiscalDTO.setQuantity(notaFiscal.getQuantity());
-		notaFiscalDTO.setUnit_value(notaFiscal.getUnit_value());
-		notaFiscalDTO.setRecurso(notaFiscal.getRecurso());
-		notaFiscalDTO.setFuncao(notaFiscal.getFuncao());
-		notaFiscalDTO.setTax_percent(notaFiscal.getTax_percent());
-		notaFiscalDTO.setDiscount_percent(notaFiscal.getDiscount_percent());
-		notaFiscalDTO.setSubtotal(notaFiscal.getSubtotal());
-		notaFiscalDTO.setValue(notaFiscal.getValue());
+		notaFiscalDTO.setName(listaNotafiscal.get(0).getName());
+		notaFiscalDTO.setAddress(listaNotafiscal.get(0).getAddress());
+		notaFiscalDTO.setNumber(listaNotafiscal.get(0).getNumber());
+		notaFiscalDTO.setValue(listaNotafiscal.get(0).getValue());
+
+		List<NotaFiscalItemDTO> items = new ArrayList<>();
+
+		for (NotaFiscal nf : listaNotafiscal) {
+			NotaFiscalItemDTO item = new NotaFiscalItemDTO();
+
+			item.setService_description(nf.getService_description());
+			item.setQuantity(nf.getQuantity());
+			item.setUnit_value(nf.getUnit_value());
+			item.setRecurso(nf.getRecurso());
+			item.setFuncao(nf.getFuncao());
+			item.setTax_percent(nf.getTax_percent());
+			item.setDiscount_percent(nf.getDiscount_percent());
+			item.setSubtotal(nf.getSubtotal());
+
+			items.add(item);
+		}
+
+		notaFiscalDTO.setItems(items);
 
 		return notaFiscalDTO;
+	}
+
+	private Boolean ignoraDuplicado(List<NotaFiscalList> listNotaFiscal, Integer number) {
+		for (NotaFiscalList nf : listNotaFiscal) {
+			if (nf.getNumber().equals(number))
+				return false;
+		}
+
+		return true;
 	}
 }

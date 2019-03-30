@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import br.com.univali.notaFiscal.domain.NotaFiscal;
+import br.com.univali.notaFiscal.dto.NotaFiscalList;
 import br.com.univali.notaFiscal.services.NotaFiscalService;
 
 @Controller
@@ -20,7 +20,7 @@ public class NotaFiscalUiController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String getPost(Model model) {
 		try {
-			List<NotaFiscal> notaFiscal = notaFiscalService.listAll();
+			List<NotaFiscalList> notaFiscal = notaFiscalService.listAll();
 
 			model.addAttribute("listNotaFiscal", notaFiscal);
 

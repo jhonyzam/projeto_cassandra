@@ -47,53 +47,50 @@
 				<label class="sublinha-val" th:text="'00/00/0000'">default</label>
 			</div>
 			<div class="sub-linha cemPercent left">
-				<label class="sublinha-tit" th:text="'ENDEREÇO'">default</label>
-				<label class="sublinha-val" th:text="${notafiscal.address}">default</label>
+				<label class="sublinha-tit" th:text="'ENDEREÇO'">default</label> <label
+					class="sublinha-val" th:text="${notafiscal.address}">default</label>
 			</div>
 		</div>
 
-		<label class="label-linha"
-			th:text="'DADOS DOS PRODUTOS / SERVIÇOS'">default</label>
+		<label class="label-linha" th:text="'DADOS DOS PRODUTOS / SERVIÇOS'">default</label>
 		<div class="linha">
 			<div class="sub-linha cemPercent left"
 				style="min-height: 20px; height: 20px;">
-				<div class="titulo-table" style="width: 52px">CÓDIGO</div>
 				<div class="titulo-table trintaPercent">DESCRIÇÃO</div>
-				<div class="titulo-table dezPercent">QUANT.</div>
+				<div class="titulo-table " style="width: 52px">QUANT.</div>
 				<div class="titulo-table dezPercent">VALOR UNIT</div>
 				<div class="titulo-table" style="width: 30px">TAXA</div>
 				<div class="titulo-table dezPercent">DESCONTO</div>
 				<div class="titulo-table dezPercent">SUB-TOTAL</div>
-				<div class="titulo-table dezPercent" style="border-right: 0;">TOTAL</div>
+				<div class="titulo-table dezPercent">RECURSO</div>
+				<div class="titulo-table dezPercent" style="border-right: 0;">FUNÇÃO</div>
 			</div>
-			<div class="sub-linha cemPercent left">
-				<div class="value-table" style="width: 52px"
-					th:text="${notafiscal.number}">default</div>
-				<div class="value-table trintaPercent"
-					th:text="${notafiscal.service_description}">default</div>
-				<div class="value-table dezPercent" th:text="${notafiscal.quantity}">default</div>
-				<div class="value-table dezPercent"
-					th:text="${notafiscal.unit_value}">default</div>
-				<div class="value-table" style="width: 30px"
-					th:text="${notafiscal.tax_percent}">default</div>
-				<div class="value-table dezPercent"
-					th:text="${notafiscal.discount_percent}">default</div>
-				<div class="value-table dezPercent"
-					th:text="${#numbers.formatDecimal(notafiscal.subtotal, 0, 'POINT', 2, 'COMMA')}">default</div>
-				<div class="value-table dezPercent" style="border-right: 0;"
-					th:text="${#numbers.formatDecimal(notafiscal.value, 0, 'POINT', 2, 'COMMA')}">default</div>
+			<div th:each="item : ${notafiscal.items}">
+				<div class="sub-linha cemPercent left">
+					<div class="value-table trintaPercent"
+						th:text="${item.service_description}">default</div>
+					<div class="value-table" style="width: 52px"
+						th:text="${item.quantity}">default</div>
+					<div class="value-table dezPercent" th:text="${item.unit_value}">default</div>
+					<div class="value-table" style="width: 30px"
+						th:text="${item.tax_percent}">default</div>
+					<div class="value-table dezPercent"
+						th:text="${item.discount_percent}">default</div>
+					<div class="value-table dezPercent"
+						th:text="${#numbers.formatDecimal(item.subtotal, 0, 'POINT', 2, 'COMMA')}">default</div>
+					<div class="value-table dezPercent" th:text="${item.recurso}">default</div>
+					<div class="value-table dezPercent" style="border-right: 0;"
+						th:text="${item.funcao}">default</div>
+				</div>
 			</div>
 		</div>
 
-		<label class="label-linha" th:text="'DADOS ADICIONAIS'">default</label>
+		<label class="label-linha" th:text="'TOTAL'">default</label>
 		<div class="linha">
-			<div class="sub-linha sessentaPercent left">
-				<label class="sublinha-tit" th:text="'RECURSO'">default</label> <label
-					class="sublinha-val" th:text="${notafiscal.recurso}">default</label>
-			</div>
-			<div class="sub-linha left" style="width: 267px">
-				<label class="sublinha-tit" th:text="'FUNÇÂO'">default</label>
-				<label class="sublinha-val" th:text="${notafiscal.funcao}">default</label>
+			<div class="sub-linha cemPercent left">
+				<label class="sublinha-tit right" th:text="' '"></label> <label
+					class="sublinha-val right"
+					th:text="${#numbers.formatDecimal(notafiscal.value, 0, 'POINT', 2, 'COMMA')}">default</label>
 			</div>
 		</div>
 	</div>

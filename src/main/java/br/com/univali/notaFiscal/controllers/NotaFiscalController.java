@@ -2,7 +2,6 @@ package br.com.univali.notaFiscal.controllers;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -35,14 +34,13 @@ public class NotaFiscalController {
 		return notaFiscalService.getNotasFiscaisMysql();
 	}
 
-	@RequestMapping(value = "/notafiscal/cassandra/exportPDF/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/notafiscal/cassandra/exportPDF/{number}", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<InputStreamResource> exportNotafiscal(@PathVariable("id") String id) throws Exception {
-		UUID uid = UUID.fromString(id);  
-		NotaFiscalDTO notaFiscalDTO = notaFiscalService.getById(uid);
+	public ResponseEntity<InputStreamResource> exportNotafiscal(@PathVariable("number") Integer number) throws Exception {
+		NotaFiscalDTO notaFiscalDTO = notaFiscalService.getByNumber(number);
 		
 		MediaType mediaType = MediaType.parseMediaType("application/pdf");
-		File file = pdfGenerator.createPdf("notafiscal/export", notaFiscalDTO, id);
+		File file = pdfGenerator.createPdf("notafiscal/export", notaFiscalDTO, number.toString());
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
  
         return ResponseEntity.ok()
